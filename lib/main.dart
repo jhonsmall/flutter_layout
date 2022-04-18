@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_layout/basic_list.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,22 +23,12 @@ class MyApp extends StatelessWidget {
             ),
             // Show other sliver stuff
             SliverList(
-              delegate: SliverChildListDelegate([
-                Container(
-                  height: 600,
-                  color: Colors.blue[200],
-                  child: const Center(
-                    child: Text(
-                      'Settings Tab',
-                      style: TextStyle(fontSize: 40),
-                    ),
-                  ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => ListTile(
+                  title: Text('Item $index'),
                 ),
-                Container(
-                  height: 1200,
-                  color: Colors.pink,
-                ),
-              ]),
+                childCount: 1000,
+              ),
             ),
           ],
         ),
