@@ -9,10 +9,10 @@ class FormSuma extends StatelessWidget {
   Widget build(BuildContext context) {
     final sumaBloc = BlocProvider.of<SumaBloc>(context);
     final formSaveKey = GlobalKey<FormState>();
-    final resultController = TextEditingController();
 
     return BlocBuilder<SumaBloc, SumaState>(
       builder: (context, state) {
+        print('FormSuma.build() REDIBUJADO');
         return Form(
           key: formSaveKey,
           child: Scaffold(
