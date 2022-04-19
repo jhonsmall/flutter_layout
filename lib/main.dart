@@ -1,107 +1,130 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 
 void main() {
-  runApp(MaterialApp(
-    title: 'Flutter layout',
-    home: PhysicsCardDragDemo(),
-  ));
+  runApp(
+    MyApp(),
+  );
 }
 
-class PhysicsCardDragDemo extends StatelessWidget {
-  const PhysicsCardDragDemo({Key? key}) : super(key: key);
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('PhysicsCardDragDemo'),
+    const appTitle = 'Forms';
+
+    return MaterialApp(
+      title: appTitle,
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text(appTitle),
+        ),
+        body: MyForm(),
       ),
-      body: const DraggableCard(
-        child: FlutterLogo(
-          size: 128,
+    );
+  }
+}
+
+class MyForm extends StatefulWidget {
+  const MyForm({Key? key}) : super(key: key);
+  @override
+  _MyFormState createState() => _MyFormState();
+}
+
+class _MyFormState extends State<MyForm> {
+  final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  @override
+  Widget build(BuildContext context) {
+    TextEditingController _controllerFirsName = TextEditingController();
+    TextEditingController _controllerLastName = TextEditingController();
+    TextEditingController _controllerEmail = TextEditingController();
+    TextEditingController _controllerPassword = TextEditingController();
+
+    return Form(
+      key: _formKey,
+      child: Scaffold(
+        key: _scaffoldKey,
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                TextFormField(
+                  controller: _controllerFirsName,
+                  decoration: const InputDecoration(
+                    labelText: 'First name',
+                  ),
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Please enter some text';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _controllerLastName,
+                  decoration: const InputDecoration(
+                    labelText: 'Last name',
+                  ),
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Please enter some text';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _controllerEmail,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                  ),
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Please enter some text';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _controllerPassword,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                  ),
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'Please enter some text';
+                    }
+                    return null;
+                  },
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState != null
+                          ? _formKey.currentState!.validate()
+                          : false) {
+                        print(_controllerFirsName.text);
+                        print(_controllerLastName.text);
+                        print(_controllerEmail.text);
+                        print(_controllerPassword.text);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Processing Data'),
+                          ),
+                        );
+                        // Validate returns true if the form is valid
+                      }
+                    },
+                    child: Text('Enviar')),
+              ],
+            ),
+          ),
         ),
       ),
-    );
-  }
-}
-
-class DraggableCard extends StatefulWidget {
-  const DraggableCard({
-    required this.child,
-    Key? key,
-  }) : super(key: key);
-  final Widget child;
-  @override
-  _DraggableCardState createState() => _DraggableCardState();
-}
-
-class _DraggableCardState extends State<DraggableCard>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  Alignment _dragAlignment = Alignment.center;
-  late Animation<Alignment> _animation;
-  void _runAnimation(Offset pixelPerSecond, Size size) {
-    _animation = _controller.drive(
-      AlignmentTween(
-        begin: _dragAlignment,
-        end: Alignment.center,
-      ),
-    );
-    final unitsPerSecondX = pixelPerSecond.dx / size.width;
-    final unitsPerSecondY = pixelPerSecond.dy / size.height;
-    final unitsPerSecond = Offset(unitsPerSecondX, unitsPerSecondY);
-    final unitVelocity = unitsPerSecond.distance;
-    var spring = SpringDescription(
-      mass: 30,
-      stiffness: 1,
-      damping: 1,
-    );
-    final simulation = SpringSimulation(spring, 0, 1, -unitVelocity);
-    _controller.animateWith(simulation);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-    _controller.addListener(() {
-      setState(() {
-        _dragAlignment = _animation.value;
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    return GestureDetector(
-      onPanDown: (details) => _controller.stop(),
-      onPanUpdate: (details) {
-        setState(() {
-          _dragAlignment += Alignment(
-            details.delta.dx / (size.width / 2),
-            details.delta.dy / (size.height / 2),
-          );
-        });
-      },
-      onPanEnd: (details) {
-        _runAnimation(details.velocity.pixelsPerSecond, size);
-      },
-      child: Align(
-          alignment: _dragAlignment,
-          child: Card(
-            child: widget.child,
-          )),
     );
   }
 }
